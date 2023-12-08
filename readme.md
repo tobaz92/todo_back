@@ -1,7 +1,5 @@
 # TODO Back
 
-Brief project description goes here.
-
 ## Table of Contents
 
 - [Overview](#overview)
