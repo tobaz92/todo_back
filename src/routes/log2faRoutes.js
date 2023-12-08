@@ -49,6 +49,7 @@ router.post('/generate-secret-key', async (req, res) => {
     // Return the success message and QR code image URL
     res.json({
       message: 'Secret key generated successfully',
+      totpCode,
       imageUrl,
     })
   })

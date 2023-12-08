@@ -42,7 +42,6 @@ const TodoController = {
       todo.title = title ?? todo.title
       todo.description = description ?? todo.description
       todo.isCompleted = isCompleted ?? todo.isCompleted
-      todo.date = date ?? todo.date
 
       const updatedTodo = await todo.save()
       res.json({ message: 'Update Todo successfully' })
@@ -57,7 +56,7 @@ const TodoController = {
       const todoId = req.params.id
 
       // Delete the todo
-      await TodoModel.findByIdAndDelete(todoId)
+      const todo = await TodoModel.findByIdAndDelete(todoId)
 
       res.json({ message: 'Todo deleted successfully' })
     } catch (error) {

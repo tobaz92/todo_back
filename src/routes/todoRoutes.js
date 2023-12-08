@@ -1,8 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const TodoController = require('../controllers/todoController')
-const authMiddleware = require('../middleware/authMiddleware')
 
+const TodoController = require('../controllers/todoController')
+
+const authMiddleware = require('../middleware/authMiddleware')
 const getTodoById = require('../middleware/todo/getTodoById')
 const checkTodoPermission = require('../middleware/todo/checkTodoPermission')
 const todosFiltredByUser = require('../middleware/todo/todosFiltredByUser')

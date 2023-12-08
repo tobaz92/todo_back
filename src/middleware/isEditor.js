@@ -1,16 +1,11 @@
 const User = require('../models/user')
 
 const isEditor = async (req, res, next) => {
-  const userId = req.userId
-
   try {
-    const user = req.user
-
-    if (user.role === 'admin') {
+    if (req.user.role === 'admin') {
       return next()
     }
-
-    if (user.role !== 'editor') {
+    if (req.user.role !== 'editor') {
       return res.status(403).json({ error: 'Permission refusée' })
     }
 

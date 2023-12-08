@@ -3,9 +3,12 @@ require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
+
 const userRoutes = require('./routes/userRoutes')
 const todoRoutes = require('./routes/todoRoutes')
 const log2faRoutes = require('./routes/log2faRoutes')
+
+const projectRoutes = require('./routes/projectRoutes')
 
 const app = express()
 const PORT = process.env.API_PORT
@@ -29,6 +32,8 @@ db.once('open', () => {
 app.use('/users', userRoutes)
 
 app.use('/todos', todoRoutes)
+
+app.use('/projects', projectRoutes)
 
 app.use('/2fa', log2faRoutes) // In progress
 

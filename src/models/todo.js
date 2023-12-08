@@ -6,7 +6,9 @@ const todoSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   isCompleted: { type: Boolean, default: false },
   isArchive: { type: Boolean, default: false },
-  date: { type: Date, default: Date.now },
+  isDeleted: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
+  projectId: { type: String, default: null },
 })
 
 todoSchema.pre('save', async function (next) {
