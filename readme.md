@@ -4,12 +4,9 @@
 
 - [Overview](#overview)
 - [Features](#features)
-- [Purpose](#purpose)
 - [Installation](#installation)
   - [Database: MongoDB with Docker](#database-mongodb-with-docker)
   - [Server: Node.js](#server-nodejs)
-- [API Documentation](#api-documentation)
-- [License](#license)
 
 ## Overview
 
@@ -33,12 +30,6 @@ It is designed to handle user authentication, todo creation, updates, and deleti
 - **Two-Factor Authentication (2FA):**
   - Generate a secret key and QR code for 2FA.
   - Enable 2FA for users to enhance account security.
-
-### Purpose
-
-The primary goal of this backend application is to provide a robust and secure foundation for a todo management system. It facilitates user authentication, manages todos, and implements additional security measures through 2FA.
-
-Please refer to the API Documentation section for detailed information on available routes and functionalities.
 
 ## Installation
 
@@ -79,101 +70,3 @@ pnpm run dev
 ```
 
 The server will be running at http://localhost:3000. You can customize the port in the config file if needed.
-
-## API Documentation
-
-### Users
-
-#### Get All Users (For Development)
-
-- **Route:** `GET /users/dev`
-- **Description:** Obtain a list of all users (for development purposes).
-- **Authorization:** None (public endpoint).
-
-#### Get User by ID
-
-- **Route:** `GET /users/:id`
-- **Description:** Obtain user details by their ID.
-- **Authorization:** Requires authentication and editor privileges.
-
-#### Create New User
-
-- **Route:** `POST /users/signin`
-- **Description:** Create a new user.
-- **Authorization:** None (public endpoint).
-
-#### Delete User
-
-- **Route:** `DELETE /users/:id`
-- **Description:** Delete a user by their ID.
-- **Authorization:** Requires authentication and admin privileges.
-
-#### Update User
-
-- **Route:** `PUT /users/:id`
-- **Description:** Update user details by their ID.
-- **Authorization:** Requires authentication and must be the same user.
-
-#### Authenticate User
-
-- **Route:** `POST /users/login`
-- **Description:** Authenticate a user.
-- **Authorization:** None (public endpoint).
-
-### Todos
-
-#### Get All Todos (For Development)
-
-- **Route:** `GET /todos/dev`
-- **Description:** Obtain a list of all todos (for development purposes).
-- **Authorization:** None (public endpoint).
-
-#### Get User Todos
-
-- **Route:** `GET /todos/`
-- **Description:** Obtain todos for the authenticated user.
-- **Authorization:** Requires authentication, editor privileges, and filters by user.
-
-#### Get One Todo
-
-- **Route:** `GET /todos/:id`
-- **Description:** Obtain details of a specific todo by ID.
-- **Authorization:** Requires authentication, editor privileges, and checks todo permission.
-
-#### Add a Todo
-
-- **Route:** `POST /todos/`
-- **Description:** Add a new todo.
-- **Authorization:** Requires authentication and editor privileges.
-
-#### Update a Todo
-
-- **Route:** `PUT /todos/:id`
-- **Description:** Update a todo by ID.
-- **Authorization:** Requires authentication, editor privileges, and checks todo permission.
-
-#### Delete a Todo
-
-- **Route:** `DELETE /todos/:id`
-- **Description:** Delete a todo by ID.
-- **Authorization:** Requires authentication, editor privileges, and checks todo permission.
-
-### Two-Factor Authentication (2FA)
-
-#### Generate Secret Key and QR Code
-
-- **Route:** `POST /2fa/generate-secret-key`
-- **Description:** Generate a secret key for 2FA and obtain a QR code for authentication.
-- **Authorization:** Requires authentication.
-
-#### Enable Two-Factor Authentication
-
-- **Route:** `POST /2fa/enable-2fa`
-- **Description:** Enable 2FA for the user by providing a TOTP code.
-- **Authorization:** Requires authentication.
-
-## License
-
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT) - see the [LICENSE](LICENSE) file for details.
-
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
