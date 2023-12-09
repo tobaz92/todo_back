@@ -2,7 +2,7 @@ const TodoModel = require('../models/todo')
 
 const TodoController = {
   // Get all todos from the database For dev
-  getAllTodos: async (req, res) => {
+  getAll: async (req, res) => {
     try {
       const todos = await TodoModel.find()
       res.json(todos)
@@ -11,7 +11,7 @@ const TodoController = {
     }
   },
 
-  getUserTodos: async (req, res) => {
+  get: async (req, res) => {
     try {
       res.json(req.todo)
     } catch (error) {
@@ -20,7 +20,7 @@ const TodoController = {
   },
 
   // Create a new todo in the database
-  createTodo: async (req, res) => {
+  create: async (req, res) => {
     try {
       const userId = req.userId
       const { title, description } = req.body
@@ -33,7 +33,7 @@ const TodoController = {
   },
 
   // Update a todo in the database
-  updateTodo: async (req, res) => {
+  update: async (req, res) => {
     try {
       const todo = req.todo
 
@@ -51,7 +51,7 @@ const TodoController = {
   },
 
   // Delete a todo in the database
-  deleteTodo: async (req, res) => {
+  delete: async (req, res) => {
     try {
       const todoId = req.params.id
 

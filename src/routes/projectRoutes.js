@@ -10,7 +10,7 @@ const projectsFiltredByUser = require('../middleware/project/projectsFiltredByUs
 
 const isEditor = require('../middleware/isEditor')
 
-router.get('/dev', ProjectController.getAllProjects)
+router.get('/dev', ProjectController.getAll)
 
 // router.get('/', authMiddleware, isEditor, projectsFiltredByUser, (req, res) =>
 //   ProjectController.getUserProjects(req, res)
@@ -25,7 +25,7 @@ router.get('/dev', ProjectController.getAllProjects)
 //   ProjectController.getUserProjects
 // )
 
-router.post('/', authMiddleware, isEditor, ProjectController.createProject)
+router.post('/', authMiddleware, isEditor, ProjectController.create)
 
 // router.put(
 //   '/:id',
@@ -42,7 +42,7 @@ router.delete(
   isEditor,
   getProjectById,
   checkProjectPermission,
-  ProjectController.deleteProject
+  ProjectController.delete
 )
 
 module.exports = router

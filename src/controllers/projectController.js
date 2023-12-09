@@ -1,7 +1,7 @@
 const ProjectModel = require('../models/project')
 
 const ProjectController = {
-  getAllProjects: async (req, res) => {
+  getAll: async (req, res) => {
     try {
       const projects = await ProjectModel.find()
       res.json(projects)
@@ -10,7 +10,7 @@ const ProjectController = {
     }
   },
 
-  //   getUserTodos: async (req, res) => {
+  //   get: async (req, res) => {
   //     try {
   //       res.json(req.project)
   //     } catch (error) {
@@ -18,7 +18,7 @@ const ProjectController = {
   //     }
   //   },
 
-  createProject: async (req, res) => {
+  create: async (req, res) => {
     try {
       const userId = req.userId
       const { title, order } = req.body
@@ -58,7 +58,7 @@ const ProjectController = {
   },
 
   //   // Update a project in the database
-  //   updateProject: async (req, res) => {
+  //   update: async (req, res) => {
   //     try {
   //       const project = req.project
 
@@ -76,7 +76,7 @@ const ProjectController = {
   //   },
 
   //   // Delete a project in the database
-  deleteProject: async (req, res) => {
+  delete: async (req, res) => {
     try {
       const projectId = req.params.id
 

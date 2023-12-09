@@ -11,11 +11,15 @@ const todosFiltredByUser = require('../middleware/todo/todosFiltredByUser')
 const isEditor = require('../middleware/isEditor')
 
 // Get all todos for dev
-router.get('/dev', (req, res) => TodoController.getAllTodos(req, res))
+router.get('/dev', TodoController.getAll)
 
 // Get user todos
-router.get('/', authMiddleware, isEditor, todosFiltredByUser, (req, res) =>
-  TodoController.getUserTodos(req, res)
+router.get(
+  '/',
+  authMiddleware,
+  isEditor,
+  todosFiltredByUser,
+  TodoController.get
 )
 
 // Get one todo
@@ -25,11 +29,11 @@ router.get(
   isEditor,
   getTodoById,
   checkTodoPermission,
-  TodoController.getUserTodos
+  TodoController.get
 )
 
 // Add a todo
-router.post('/', authMiddleware, isEditor, TodoController.createTodo)
+router.post('/', authMiddleware, isEditor, TodoController.create)
 
 // Update a todo
 router.put(
@@ -38,7 +42,7 @@ router.put(
   isEditor,
   getTodoById,
   checkTodoPermission,
-  TodoController.updateTodo
+  TodoController.update
 )
 
 // Delete a todo
@@ -48,7 +52,7 @@ router.delete(
   isEditor,
   getTodoById,
   checkTodoPermission,
-  TodoController.deleteTodo
+  TodoController.delete
 )
 
 module.exports = router

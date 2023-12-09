@@ -5,7 +5,7 @@ const config = require('../config')
 
 const UserController = {
   // Get all users (for dev)
-  getAllUsers: async (req, res) => {
+  getAll: async (req, res) => {
     try {
       const users = await UserModel.find()
       res.json(users)
@@ -15,7 +15,7 @@ const UserController = {
   },
 
   // Get a user
-  getUser: async (req, res) => {
+  get: async (req, res) => {
     res.status(500).json({
       userId: req.user.id,
       username: req.user.username,
@@ -24,7 +24,7 @@ const UserController = {
   },
 
   // Create a new user with a specified role
-  createUser: async (req, res) => {
+  create: async (req, res) => {
     try {
       const { username, email, password, role } = req.body
 
@@ -48,7 +48,7 @@ const UserController = {
   },
 
   // Delete a user
-  deleteUser: async (req, res) => {
+  delete: async (req, res) => {
     try {
       const userId = req.params.id
 
@@ -69,7 +69,7 @@ const UserController = {
   },
 
   // Update a user
-  updateUser: async (req, res) => {
+  update: async (req, res) => {
     try {
       const userId = req.params.id
       const { username, email, password, role, isActive, isBanned } = req.body
@@ -103,7 +103,7 @@ const UserController = {
   },
 
   // Authenticate a user
-  loginUser: async (req, res) => {
+  login: async (req, res) => {
     try {
       const { email, password } = req.body
 
