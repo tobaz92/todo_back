@@ -9,7 +9,7 @@ const isAdmin = require('../middleware/isAdmin')
 const isSameUser = require('../middleware/isSameUser')
 
 // Obtenir tous les utilisateurs
-router.get('/dev', UserController.getAll) // FOR DEV
+router.get('/', UserController.getAll) // FOR DEV
 
 router.get('/:id', authMiddleware, isEditor, isSameUser, UserController.get)
 

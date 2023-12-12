@@ -10,77 +10,46 @@ const ProjectController = {
     }
   },
 
-  //   get: async (req, res) => {
-  //     try {
-  //       res.json(req.project)
-  //     } catch (error) {
-  //       res.status(500).json({ error: error.message })
-  //     }
-  //   },
-
-  create: async (req, res) => {
+  get: async (req, res) => {
     try {
-      const userId = req.userId
-      const { title, order } = req.body
+      const todos = req.todos
+      const project = req.project
 
-      const projects = await ProjectModel.find()
-
-      let newOrder
-      if (!order) {
-        const lastOrder = projects[projects.length - 1]?.order
-        newOrder = lastOrder === undefined ? 0 : lastOrder + 1
-      } else {
-        newOrder = order
-      }
-      console.log('order', order)
-      console.log('newOrder', newOrder)
-
-      const project = new ProjectModel({ title, order: newOrder, userId })
-
-      const savedProject = await project.save()
-      res.json(savedProject)
-
-      // TODO: update order of all projects
-
-      //   // reorder all projects
-      //   const projectsOrder = await ProjectModel.find()
-
-      //   // projectOrder order by key order
-      //   projectsOrder.sort((a, b) => a.order - b.order)
-
-      //   projectsOrder.forEach(async (project, index) => {
-      //     project.order = index
-      //     await project.save()
-      //   })
+      res.json({
+        project: project,
+        todos: todos,
+      })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
   },
 
-  //   // Update a project in the database
-  //   update: async (req, res) => {
-  //     try {
-  //       const project = req.project
+  create: async (req, res) => {
+    try {
+      const userId = req.userId
+      let { title, order } = req.body
 
-  //       const { title, description, isCompleted, date } = req.body
+      const reorder = order === undefined ? false : true
 
-  //       project.title = title ?? project.title
-  //       project.description = description ?? project.description
-  //       project.isCompleted = isCompleted ?? project.isCompleted
+      if (order === undefined) {
+        const projects = await ProjectModel.find()
+        order =
+          projects.length > 0 ? projects[projects.length - 1].order + 1 : 0
+      }
+      const project = new ProjectModel({ title, order, userId })
+      const savedProject = await project.save()
+      res.json(savedProject)
+    } catch (error) {
+      res.status(500).json({ error: error.message })
+    }
+  },
 
-  //       const updatedProject = await project.save()
-  //       res.json({ message: 'Update Project successfully' })
-  //     } catch (error) {
-  //       res.status(500).json({ error: error.message })
-  //     }
-  //   },
-
-  //   // Delete a project in the database
+  // Delete a project in the database
   delete: async (req, res) => {
     try {
       const projectId = req.params.id
 
-      const project = await ProjectModel.findByIdAndDelete(projectId)
+      const deletedProject = await ProjectModel.findByIdAndDelete(projectId)
 
       res.json({ message: 'Project deleted successfully' })
     } catch (error) {

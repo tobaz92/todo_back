@@ -9,21 +9,23 @@ const checkProjectPermission = require('../middleware/project/checkProjectPermis
 const projectsFiltredByUser = require('../middleware/project/projectsFiltredByUser')
 
 const isEditor = require('../middleware/isEditor')
+const getAllTodosInPRoject = require('../middleware/project/getAllTodosInPRoject')
 
-router.get('/dev', ProjectController.getAll)
+router.get('/', ProjectController.getAll)
 
 // router.get('/', authMiddleware, isEditor, projectsFiltredByUser, (req, res) =>
 //   ProjectController.getUserProjects(req, res)
 // )
 
-// router.get(
-//   '/:id',
-//   authMiddleware,
-//   isEditor,
-//   getProjectById,
-//   checkProjectPermission,
-//   ProjectController.getUserProjects
-// )
+router.get(
+  '/:id',
+  authMiddleware,
+  isEditor,
+  getProjectById,
+  checkProjectPermission,
+  getAllTodosInPRoject,
+  ProjectController.get
+)
 
 router.post('/', authMiddleware, isEditor, ProjectController.create)
 
@@ -36,6 +38,7 @@ router.post('/', authMiddleware, isEditor, ProjectController.create)
 //   ProjectController.updateProject
 // )
 
+// TODO : have a probleme with this route
 router.delete(
   '/:id',
   authMiddleware,

@@ -23,8 +23,8 @@ const TodoController = {
   create: async (req, res) => {
     try {
       const userId = req.userId
-      const { title, description } = req.body
-      const todo = new TodoModel({ title, description, userId })
+      const { title, description, projectId } = req.body
+      const todo = new TodoModel({ title, description, userId, projectId })
       const savedTodo = await todo.save()
       res.json(savedTodo)
     } catch (error) {
@@ -56,7 +56,7 @@ const TodoController = {
       const todoId = req.params.id
 
       // Delete the todo
-      const todo = await TodoModel.findByIdAndDelete(todoId)
+      const deletedTodo = await TodoModel.findByIdAndDelete(todoId)
 
       res.json({ message: 'Todo deleted successfully' })
     } catch (error) {
