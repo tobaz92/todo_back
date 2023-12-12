@@ -87,5 +87,8 @@ router.post('/enable-2fa', async (req, res) => {
     res.status(401).json({ error: 'Invalid token, 2FA not enabled' })
   }
 })
+router.get('/', async (req, res) => {
+  res.json({ message: '2FA router' })
+})
 
 module.exports = router
