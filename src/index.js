@@ -44,6 +44,8 @@ app.use('/2fa', log2faRoutes) // In progress
 
 app.use('/login', UserController.login)
 
+app.post('/signin', UserController.create)
+
 // Start the server
 // app.listen(PORT, () => {
 //   console.log(`Server is running on port ${PORT}`)

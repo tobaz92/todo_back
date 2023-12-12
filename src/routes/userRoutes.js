@@ -13,11 +13,9 @@ router.get('/', UserController.getAll) // FOR DEV
 
 router.get('/:id', authMiddleware, isEditor, isSameUser, UserController.get)
 
-// Créer un nouvel utilisateur
-router.post('/signin', UserController.create)
-
 // Delete a user
 router.delete('/:id', authMiddleware, isAdmin, UserController.delete)
+router.delete('/dev/:id', UserController.delete)
 
 // Mettre à jour un utilisateur
 router.put('/:id', authMiddleware, isSameUser, UserController.update)
