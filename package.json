@@ -8,9 +8,6 @@
     "dev": "nodemon src/index.js",
     "test": "jest --watchAll --verbose"
   },
-  "jest": {
-    "testEnvironment": "node"
-  },
   "author": "",
   "license": "ISC",
   "dependencies": {

@@ -23,6 +23,6 @@ router.delete('/:id', authMiddleware, isAdmin, UserController.delete)
 router.put('/:id', authMiddleware, isSameUser, UserController.update)
 
 // Authentifier un utilisateur
-router.post('/login', UserController.login)
+// router.post('/login', UserController.login)
 
 module.exports = router

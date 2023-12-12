@@ -9,9 +9,10 @@ const todoRoutes = require('./routes/todoRoutes')
 const log2faRoutes = require('./routes/log2faRoutes')
 
 const projectRoutes = require('./routes/projectRoutes')
+const UserController = require('./controllers/userController')
 
 const app = express()
-const PORT = process.env.API_PORT
+const PORT = process.env.API_PORT || 3000
 
 app.use(bodyParser.json())
 
@@ -40,6 +41,8 @@ app.use('/todos', todoRoutes)
 app.use('/projects', projectRoutes)
 
 app.use('/2fa', log2faRoutes) // In progress
+
+app.use('/login', UserController.login)
 
 // Start the server
 // app.listen(PORT, () => {

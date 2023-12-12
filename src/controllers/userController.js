@@ -110,13 +110,13 @@ const UserController = {
       const user = await UserModel.findOne({ email })
 
       if (!user) {
-        return res.status(404).json({ error: 'Utilisateur non trouvé' })
+        return res.status(401).json({ error: 'Incorrect password' })
       }
 
       const passwordMatch = await bcrypt.compare(password, user.password)
 
       if (!passwordMatch) {
-        return res.status(401).json({ error: 'Mot de passe incorrect' })
+        return res.status(401).json({ error: 'Incorrect password' })
       }
 
       const { isActive, isBanned } = user
