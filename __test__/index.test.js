@@ -29,7 +29,7 @@ describe('API Routes', (done) => {
   })
 
   test('should get all projects', async () => {
-    const response = await request(app).get('/projects')
+    const response = await request(app).get('/projects/dev')
     expect(response.status).toBe(200)
     expect(response.headers['content-type']).toMatch(/application\/json/)
     expect(response.body).toBeInstanceOf(Array)

@@ -26,7 +26,7 @@ db.on('error', (error) => {
   throw new Error('Unable to connect to the database')
 })
 db.once('open', () => {
-  console.log('Successfully connected to the database')
+  //   console.log('Successfully connected to the database')
 })
 
 app.use('/users', userRoutes)

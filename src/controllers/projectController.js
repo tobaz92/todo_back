@@ -9,7 +9,19 @@ const ProjectController = {
       res.status(500).json({ error: error.message })
     }
   },
+  getAllUser: async (req, res) => {
+    try {
+      const todos = req.todos
+      const project = req.project
 
+      res.json({
+        project: project,
+        todos: todos,
+      })
+    } catch (error) {
+      res.status(500).json({ error: error.message })
+    }
+  },
   get: async (req, res) => {
     try {
       const todos = req.todos
@@ -39,6 +51,25 @@ const ProjectController = {
       const project = new ProjectModel({ title, order, userId })
       const savedProject = await project.save()
       res.json(savedProject)
+    } catch (error) {
+      res.status(500).json({ error: error.message })
+    }
+  },
+
+  update: async (req, res) => {
+    try {
+      const projectId = req.params.id
+      const { title, order, isArchive, isDeleted } = req.body
+
+      const project = req.project
+      project.title = title ?? project.title
+      project.order = order ?? project.order
+      project.isArchive = isArchive ?? project.isArchive
+      project.isDeleted = isDeleted ?? project.isDeleted
+
+      const updatedProject = await project.save()
+
+      res.json(project)
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
