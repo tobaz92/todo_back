@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
-    "test": "jest --watchAll --verbose"
+    "start": "API_PORT=3001 node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "API_PORT=3002 jest --watch --verbose"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +23,7 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "nodemon": "^3.0.2",
+    "superagent": "^8.1.2",
     "supertest": "^6.3.3"
   }
 }

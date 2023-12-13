@@ -1,46 +1,43 @@
 const request = require('supertest')
-const { server, closeServer } = require('../index.js')
+const { app } = require('../src/app')
 
-describe('API Routes', () => {
-  afterAll(() => {
-    closeServer(false)
-  })
-  beforeEach(async () => {
-    if (!server.address()) {
-      await new Promise((resolve) => {
-        server.listen(PORT, () => {
-          console.log(`Server is running on port ${PORT}`)
-          resolve()
-        })
+describe('Test the root path', () => {
+  test('It should response the GET method', (done) => {
+    request(app)
+      .get('/')
+      .then((response) => {
+        expect(response.statusCode).toBe(200)
+        done()
       })
-    }
   })
+})
 
-  it('should get all users', async () => {
-    const response = await request(server).get('/users')
+describe('API Routes', (done) => {
+  test('should get all users', async () => {
+    const response = await request(app).get('/users')
     expect(response.status).toBe(200)
     expect(response.headers['content-type']).toMatch(/application\/json/)
     expect(response.body).toBeInstanceOf(Array)
     expect(response.body.length).toBeGreaterThan(0)
   })
 
-  it('should get all todos', async () => {
-    const response = await request(server).get('/todos')
+  test('should get all todos', async () => {
+    const response = await request(app).get('/todos')
     expect(response.status).toBe(401)
     expect(response.headers['content-type']).toMatch(/application\/json/)
     expect(response.body).toEqual({ error: 'Missing authorization token' })
   })
 
-  it('should get all projects', async () => {
-    const response = await request(server).get('/projects')
+  test('should get all projects', async () => {
+    const response = await request(app).get('/projects')
     expect(response.status).toBe(200)
     expect(response.headers['content-type']).toMatch(/application\/json/)
     expect(response.body).toBeInstanceOf(Array)
     expect(response.body.length).toBeGreaterThan(0)
   })
 
-  it('should get all 2fa logs', async () => {
-    const response = await request(server).get('/2fa')
+  test('should get all 2fa logs', async () => {
+    const response = await request(app).get('/2fa')
     expect(response.status).toBe(200)
     expect(response.headers['content-type']).toMatch(/application\/json/)
     expect(response.body).toEqual({ message: '2FA router' })

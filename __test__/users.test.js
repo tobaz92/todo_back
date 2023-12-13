@@ -1,24 +1,9 @@
 const request = require('supertest')
-const { server, closeServer } = require('../index.js')
+const { app } = require('../src/app')
 
 describe('Authentication', () => {
-  beforeEach(async () => {
-    if (!server.address()) {
-      await new Promise((resolve) => {
-        server.listen(PORT, () => {
-          console.log(`Server is running on port ${PORT}`)
-          resolve()
-        })
-      })
-    }
-  })
-
-  afterAll(() => {
-    closeServer(false)
-  })
-
-  it('should authenticate a user and return a token', async () => {
-    const response = await request(server).post('/login').send({
+  test('should authenticate a user and return a token', async () => {
+    const response = await request(app).post('/login').send({
       email: 'admin@admin.com',
       password: 'admin',
     })
@@ -26,8 +11,8 @@ describe('Authentication', () => {
     expect(response.body).toHaveProperty('token')
   })
 
-  it('should handle incorrect credentials', async () => {
-    const response = await request(server).post('/login').send({
+  test('should handle incorrect credentials', async () => {
+    const response = await request(app).post('/login').send({
       email: 'incorrect@example.com',
       password: 'incorrectPassword',
     })
@@ -47,8 +32,8 @@ describe('User Management', () => {
   }
 
   // CREATE
-  it('should handle create user', async () => {
-    const response = await request(server).post('/signin').send(userData)
+  test('should handle create user', async () => {
+    const response = await request(app).post('/signin').send(userData)
     expect(response.status).toBe(200)
     expect(response.headers['content-type']).toMatch(/application\/json/)
     expect(response.body).toHaveProperty('userId')
@@ -56,12 +41,10 @@ describe('User Management', () => {
   })
 
   // 2FA GENERATE SECRET
-  it('should generate 2FA secret key', async () => {
-    const response = await request(server)
-      .post('/2fa/generate-secret-key')
-      .send({
-        userId: userCreateUserId,
-      })
+  test('should generate 2FA secret key', async () => {
+    const response = await request(app).post('/2fa/generate-secret-key').send({
+      userId: userCreateUserId,
+    })
 
     expect(response.status).toBe(200)
     expect(response.body).toHaveProperty('message')
@@ -78,8 +61,8 @@ describe('User Management', () => {
     totpCode = response.body.totpCode
   })
 
-  it('should enabled 2FA user', async () => {
-    const response = await request(server).post('/2fa/enable-2fa').send({
+  test('should enabled 2FA user', async () => {
+    const response = await request(app).post('/2fa/enable-2fa').send({
       userId: userCreateUserId,
       totp: totpCode,
     })
@@ -89,8 +72,8 @@ describe('User Management', () => {
   })
 
   // LOGIN
-  it('should login', async () => {
-    const response = await request(server).post('/login').send(userData)
+  test('should login', async () => {
+    const response = await request(app).post('/login').send(userData)
 
     expect(response.status).toBe(200)
     expect(response.body).toHaveProperty('token')
@@ -98,14 +81,14 @@ describe('User Management', () => {
   })
 
   // UPDATE
-  it('should update user', async () => {
+  test('should update user', async () => {
     const updatedUserData = {
       username: 'usertestUpdated',
       email: 'usertestUpdated@usertestUpdated.com',
       password: 'usertestUpdated',
     }
 
-    const response = await request(server)
+    const response = await request(app)
       .put(`/users/${userCreateUserId}`)
       .set('Authorization', `Bearer ${tokenUser}`)
       .send(updatedUserData)
@@ -114,11 +97,11 @@ describe('User Management', () => {
   })
 
   // UPDATE - Change role to admin if user is not admin
-  it('should update user role to admin if user is not admin', async () => {
+  test('should update user role to admin if user is not admin', async () => {
     const updatedUserData = {
       role: 'admin',
     }
-    const response = await request(server)
+    const response = await request(app)
       .put(`/users/${userCreateUserId}`)
       .set('Authorization', `Bearer ${tokenUser}`)
       .send(updatedUserData)
@@ -127,22 +110,27 @@ describe('User Management', () => {
     expect(response.body).toEqual({ error: 'Permission denied' })
   })
 
-  // DELETE — USER MODE TODO:A faire !
-  //   it('should handle deleted user user', async () => {
-  //     const response = await request(server)
-  //       .set('Authorization', `Bearer ${tokenUser}`)
-  //       .delete(`/users/${userCreateUserId}`)
-
-  //     expect(response.status).toBe(200)
-  //     expect(response.body).toEqual({ message: 'User deleted successfully' })
+  //   DELETE — USER MODE TODO:A faire !
+  //   test('should handle deleted user user', async () => {
+  //   const response = await request(app)
+  //     .set('Authorization', `Bearer ${tokenUser}`)
+  //     .delete(`/users/${userCreateUserId}`)
+  //   expect(response.status).toBe(200)
+  //   expect(response.body).toEqual({ message: 'User deleted successfully' })
   //   })
 
-  // DELETE — DEV MODE
-  it('should handle deleted dev user', async () => {
-    const response = await request(server).delete(
-      `/users/dev/${userCreateUserId}`
-    )
+  test('should respond with a 200 status code', async () => {
+    const response = await request(app)
+      .delete(`/users/${userCreateUserId}`)
+      .set('Authorization', `Bearer ${tokenUser}`)
     expect(response.status).toBe(200)
     expect(response.body).toEqual({ message: 'User deleted successfully' })
   })
+
+  // DELETE — DEV MODE
+  //   test('should handle deleted dev user', async () => {
+  //     const response = await request(app).delete(`/users/dev/${userCreateUserId}`)
+  //     expect(response.status).toBe(200)
+  //     expect(response.body).toEqual({ message: 'User deleted successfully' })
+  //   })
 })
