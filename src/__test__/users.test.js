@@ -39,50 +39,105 @@ describe('Authentication', () => {
 describe('User Management', () => {
   let userCreateUserId = ''
   let tokenUser = ''
+  let totpCode = ''
   const userData = {
     username: 'usertest',
     email: 'usertest@usertest.com',
     password: 'usertest',
   }
 
+  // CREATE
   it('should handle create user', async () => {
     const response = await request(server).post('/signin').send(userData)
     expect(response.status).toBe(200)
     expect(response.headers['content-type']).toMatch(/application\/json/)
     expect(response.body).toHaveProperty('userId')
-    userCreateUserId = response.body.userId // Stocker l'ID pour une utilisation ultérieure
+    userCreateUserId = response.body.userId
   })
 
-  // activation 2FA user
-  // TODO: In progres !
+  // 2FA GENERATE SECRET
+  it('should generate 2FA secret key', async () => {
+    const response = await request(server)
+      .post('/2fa/generate-secret-key')
+      .send({
+        userId: userCreateUserId,
+      })
 
-  //   // login
-  //   it('should authenticate a user and return a token', async () => {
-  //     const response = await request(server).post('/login').send(userData)
-  //     tokenUser = response.body.token
-  //     expect(response.status).toBe(200)
-  //     expect(response.body).toHaveProperty('token')
-  //   })
+    expect(response.status).toBe(200)
+    expect(response.body).toHaveProperty('message')
+    expect(response.body).toHaveProperty('totpCode')
+    expect(response.body).toHaveProperty('imageUrl')
 
-  //   const updatedUserData = {
-  //     username: 'usertestUpdated',
-  //     email: 'usertestUpdated@usertestUpdated.com',
-  //     password: 'usertestUpdated',
-  //   }
+    expect(response.body.message).toBe('Secret key generated successfully')
 
-  //   it('should handle update user', async () => {
+    const base64Regex = /^data:image\/\w+;base64,[\s\S]+$/
+    expect(base64Regex.test(response.body.imageUrl)).toBe(true)
+
+    const totpCodeRegex = /^\d{6}$/
+    expect(totpCodeRegex.test(response.body.totpCode)).toBe(true)
+    totpCode = response.body.totpCode
+  })
+
+  it('should enabled 2FA user', async () => {
+    const response = await request(server).post('/2fa/enable-2fa').send({
+      userId: userCreateUserId,
+      totp: totpCode,
+    })
+
+    expect(response.status).toBe(200)
+    expect(response.body.message).toBe('2FA enabled successfully')
+  })
+
+  // LOGIN
+  it('should login', async () => {
+    const response = await request(server).post('/login').send(userData)
+
+    expect(response.status).toBe(200)
+    expect(response.body).toHaveProperty('token')
+    tokenUser = response.body.token
+  })
+
+  // UPDATE
+  it('should update user', async () => {
+    const updatedUserData = {
+      username: 'usertestUpdated',
+      email: 'usertestUpdated@usertestUpdated.com',
+      password: 'usertestUpdated',
+    }
+
+    const response = await request(server)
+      .put(`/users/${userCreateUserId}`)
+      .set('Authorization', `Bearer ${tokenUser}`)
+      .send(updatedUserData)
+
+    expect(response.status).toBe(200)
+  })
+
+  // UPDATE - Change role to admin if user is not admin
+  it('should update user role to admin if user is not admin', async () => {
+    const updatedUserData = {
+      role: 'admin',
+    }
+    const response = await request(server)
+      .put(`/users/${userCreateUserId}`)
+      .set('Authorization', `Bearer ${tokenUser}`)
+      .send(updatedUserData)
+
+    expect(response.status).toBe(403)
+    expect(response.body).toEqual({ error: 'Permission denied' })
+  })
+
+  // DELETE — USER MODE TODO:A faire !
+  //   it('should handle deleted user user', async () => {
   //     const response = await request(server)
-  //       .put(`/users/${userCreateUserId}`)
-  //       .send(updatedUserData)
+  //       .set('Authorization', `Bearer ${tokenUser}`)
+  //       .delete(`/users/${userCreateUserId}`)
 
   //     expect(response.status).toBe(200)
-  //     expect(response.body).toEqual({
-  //       message: 'Utilisateur mis à jour avec succès',
-  //       username: updatedUserData.username,
-  //       email: updatedUserData.email,
-  //     })
+  //     expect(response.body).toEqual({ message: 'User deleted successfully' })
   //   })
 
+  // DELETE — DEV MODE
   it('should handle deleted dev user', async () => {
     const response = await request(server).delete(
       `/users/dev/${userCreateUserId}`

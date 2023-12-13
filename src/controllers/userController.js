@@ -87,7 +87,7 @@ const UserController = {
       user.role = role ?? user.role
       user.isActive = isActive ?? user.isActive
       user.isBanned = isBanned ?? user.isBanned
-      user.secretKey = secretKey ?? user.secretKey
+      //   user.secretKey = secretKey ?? user.secretKey
 
       // Save changes
       const updatedUser = await user.save()

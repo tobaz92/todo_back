@@ -52,7 +52,7 @@ app.post('/signin', UserController.create)
 // })
 
 const server = app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`)
+  //   console.log(`Server is running on port ${PORT}`)
 })
 
 // Exportez une fonction qui peut être utilisée pour fermer le serveur
