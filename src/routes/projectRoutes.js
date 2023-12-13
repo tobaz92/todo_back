@@ -48,4 +48,6 @@ router.delete(
   ProjectController.delete
 )
 
+router.delete('/dev/:id', ProjectController.delete)
+
 module.exports = router

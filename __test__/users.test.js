@@ -1,11 +1,12 @@
 const request = require('supertest')
 const { app } = require('../src/app')
+const { userAdmin, userTest } = require('./globalVars')
 
 describe('Authentication', () => {
   test('should authenticate a user and return a token', async () => {
     const response = await request(app).post('/login').send({
-      email: 'admin@admin.com',
-      password: 'admin',
+      email: userAdmin.email,
+      password: userAdmin.password,
     })
     expect(response.status).toBe(200)
     expect(response.body).toHaveProperty('token')
@@ -25,15 +26,10 @@ describe('User Management', () => {
   let userCreateUserId = ''
   let tokenUser = ''
   let totpCode = ''
-  const userData = {
-    username: 'usertest',
-    email: 'usertest@usertest.com',
-    password: 'usertest',
-  }
 
   // CREATE
   test('should handle create user', async () => {
-    const response = await request(app).post('/signin').send(userData)
+    const response = await request(app).post('/signin').send(userTest)
     expect(response.status).toBe(200)
     expect(response.headers['content-type']).toMatch(/application\/json/)
     expect(response.body).toHaveProperty('userId')
@@ -61,6 +57,7 @@ describe('User Management', () => {
     totpCode = response.body.totpCode
   })
 
+  // 2FA ENABLE
   test('should enabled 2FA user', async () => {
     const response = await request(app).post('/2fa/enable-2fa').send({
       userId: userCreateUserId,
@@ -73,7 +70,7 @@ describe('User Management', () => {
 
   // LOGIN
   test('should login', async () => {
-    const response = await request(app).post('/login').send(userData)
+    const response = await request(app).post('/login').send(userTest)
 
     expect(response.status).toBe(200)
     expect(response.body).toHaveProperty('token')
@@ -110,16 +107,8 @@ describe('User Management', () => {
     expect(response.body).toEqual({ error: 'Permission denied' })
   })
 
-  //   DELETE — USER MODE TODO:A faire !
-  //   test('should handle deleted user user', async () => {
-  //   const response = await request(app)
-  //     .set('Authorization', `Bearer ${tokenUser}`)
-  //     .delete(`/users/${userCreateUserId}`)
-  //   expect(response.status).toBe(200)
-  //   expect(response.body).toEqual({ message: 'User deleted successfully' })
-  //   })
-
-  test('should respond with a 200 status code', async () => {
+  // DELETE — USER MODE
+  test('should handle deleted user user', async () => {
     const response = await request(app)
       .delete(`/users/${userCreateUserId}`)
       .set('Authorization', `Bearer ${tokenUser}`)
