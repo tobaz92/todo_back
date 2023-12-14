@@ -78,7 +78,7 @@ const UserController = {
       const user = await UserModel.findById(userId)
 
       if (!user) {
-        return res.status(404).json({ error: 'Utilisateur non trouvé' })
+        return res.status(404).json({ error: 'User not found' })
       }
 
       user.username = username ?? user.username
@@ -127,14 +127,33 @@ const UserController = {
         return res.status(401).json({ error: 'Your account is not activated.' })
       }
 
+      user.isLogged = true
+
+      // Save changes
+      const loginUser = await user.save()
+
       const token = jwt.sign({ userId: user._id }, config.secretKey, {
         expiresIn: 3600, // Expires in 1 hour
       })
 
-      res.json({ token })
+      res.json({ token, userId: user._id })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
+  },
+
+  // Logout a user
+  logout: async (req, res) => {
+    console.log('ok')
+    consoler.log(req)
+
+    const user = req.user
+
+    // user.isLogged = false
+    // Save changes
+    // const logoutUser = await user.save()
+
+    res.json({ message: 'Logged out successfully' })
   },
 }
 

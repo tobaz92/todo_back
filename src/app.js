@@ -29,19 +29,34 @@ db.once('open', () => {
   //   console.log('Successfully connected to the database')
 })
 
+app.get('/', (req, res) => {
+  res.status(200).send('Hello World!')
+})
+
 app.use('/users', userRoutes)
 
 app.use('/todos', todoRoutes)
 
 app.use('/projects', projectRoutes)
 
-app.use('/2fa', log2faRoutes) // In progress
+
+// USER AUTHENTICATION
 
 app.use('/login', UserController.login)
-app.post('/signin', UserController.create)
 
-app.get('/', (req, res) => {
-  res.status(200).send('Hello World!')
-})
+app.use('/2fa', log2faRoutes) // In progress
+
+app.use('/register', UserController.create)
+
+
+// app.use('/forgot-password', UserController.forgotPassword)
+
+// app.use('/reset-password', UserController.resetPassword)
+
+
+
+
+
+
 
 module.exports = { app }

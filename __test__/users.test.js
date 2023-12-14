@@ -3,15 +3,8 @@ const { app } = require('../src/app')
 const { userAdmin, userTest } = require('./globalVars')
 
 describe('Authentication', () => {
-  test('should authenticate a user and return a token', async () => {
-    const response = await request(app).post('/login').send({
-      email: userAdmin.email,
-      password: userAdmin.password,
-    })
-    expect(response.status).toBe(200)
-    expect(response.body).toHaveProperty('token')
-  })
-
+  let projectId = ''
+  let tokenUser = ''
   test('should handle incorrect credentials', async () => {
     const response = await request(app).post('/login').send({
       email: 'incorrect@example.com',
@@ -20,6 +13,26 @@ describe('Authentication', () => {
     expect(response.status).toBe(401)
     expect(response.body).toEqual({ error: 'Incorrect password' })
   })
+
+  test('should authenticate a user and return a token', async () => {
+    const response = await request(app).post('/login').send({
+      email: userAdmin.email,
+      password: userAdmin.password,
+    })
+    expect(response.status).toBe(200)
+    expect(response.body).toHaveProperty('token')
+    tokenUser = response.body.token
+  })
+
+  //TODO: Fix this test
+  //   test('should logout a user', async () => {
+  //     const response = await request(app)
+  //       .post('/users/logout')
+  //       .set('Authorization', `Bearer ${tokenUser}`)
+
+  //     expect(response.status).toBe(200)
+  //     expect(response.body).toHaveProperty('token')
+  //   })
 })
 
 describe('User Management', () => {
@@ -29,7 +42,7 @@ describe('User Management', () => {
 
   // CREATE
   test('should handle create user', async () => {
-    const response = await request(app).post('/signin').send(userTest)
+    const response = await request(app).post('/register').send(userTest)
     expect(response.status).toBe(200)
     expect(response.headers['content-type']).toMatch(/application\/json/)
     expect(response.body).toHaveProperty('userId')

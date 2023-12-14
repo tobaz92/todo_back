@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: false },
   isBanned: { type: Boolean, default: false },
   secretKey: { type: String, default: null },
+  isLogged: { type: Boolean, default: false },
 })
 
 userSchema.pre('save', async function (next) {

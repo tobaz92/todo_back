@@ -6,7 +6,7 @@
   "scripts": {
     "start": "API_PORT=3001 node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "API_PORT=3002 jest --watchAll --verbose"
+    "test": "API_PORT=3002 jest --watchAll"
   },
   "author": "",
   "license": "ISC",
