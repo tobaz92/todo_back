@@ -5,7 +5,7 @@ yarn.lock
 
 .env
 
-mongodb/data/db/*
-mongodb/data/logs/*
+# mongodb/data/db/*
+# mongodb/data/logs/*
 
 .DS_Store
