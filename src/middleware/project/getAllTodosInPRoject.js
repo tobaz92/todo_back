@@ -1,4 +1,3 @@
-// const ProjectModel = require('../../models/project')
 const TodoModel = require('../../models/todo')
 
 const getAllTodosInPRoject = async (req, res, next) => {

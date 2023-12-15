@@ -1,4 +1,5 @@
-// Middleware check if the user is the owner of the todo
+const ErrorHandler = require('../../constants/errorMessages/errorHandler')
+
 const checkTodoPermission = async (req, res, next) => {
   if (req.user.role === 'admin') {
     next()
@@ -8,7 +9,9 @@ const checkTodoPermission = async (req, res, next) => {
     const todoId = req.todo.userId
 
     if (userId !== todoId) {
-      return res.status(403).json({ error: 'Permission denied' })
+      return res
+        .status(403)
+        .json({ error: ErrorHandler.getErrorMessage('todos', 'todoNotFound') })
     }
 
     next()

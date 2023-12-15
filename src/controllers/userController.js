@@ -2,6 +2,7 @@ const UserModel = require('../models/user')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const config = require('../config')
+const ErrorHandler = require('../constants/errorMessages/errorHandler')
 
 const UserController = {
   // Get all users (for dev)
@@ -31,17 +32,32 @@ const UserController = {
       const finalRole = ['admin', 'editor'].includes(role) ? role : 'editor'
 
       if (finalRole === 'admin' && req.user.role !== 'admin') {
-        return res.status(403).json({ error: 'Permission refusée' })
+        return res.status(403).json({
+          error: ErrorHandler.getErrorMessage(
+            'general',
+            'PermissionsError',
+            user.language
+          ),
+        })
       }
 
       if (!['admin', 'editor'].includes(finalRole)) {
-        return res.status(400).json({ error: 'Role invalide' })
+        return res.status(400).json({
+          error: ErrorHandler.getErrorMessage('users', 'invalidRole'),
+        })
       }
 
       const user = new UserModel({ username, email, password, role: finalRole })
       const savedUser = await user.save()
 
-      res.json({ message: 'Created successfully', userId: savedUser.id })
+      res.json({
+        message: ErrorHandler.getErrorMessage(
+          'users',
+          'userCreated',
+          user.language
+        ),
+        userId: savedUser.id,
+      })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
@@ -56,13 +72,17 @@ const UserController = {
       const user = await UserModel.findById(userId)
 
       if (!user) {
-        return res.status(404).json({ error: 'User not found' })
+        return res.status(404).json({
+          error: ErrorHandler.getErrorMessage('users', 'userNotFound'),
+        })
       }
 
       // Delete the user
       await UserModel.findByIdAndDelete(userId)
 
-      res.json({ message: 'User deleted successfully' })
+      res.json({
+        message: ErrorHandler.getErrorMessage('users', 'userDeleted'),
+      })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
@@ -78,7 +98,11 @@ const UserController = {
       const user = await UserModel.findById(userId)
 
       if (!user) {
-        return res.status(404).json({ error: 'User not found' })
+        return res
+          .status(404)
+          .json({
+            error: ErrorHandler.getErrorMessage('users', 'userNotFound'),
+          })
       }
 
       user.username = username ?? user.username
@@ -93,7 +117,11 @@ const UserController = {
       const updatedUser = await user.save()
 
       res.json({
-        message: 'Utilisateur mis à jour avec succès',
+        message: ErrorHandler.getErrorMessage(
+          'users',
+          'userUpdated',
+          user.language
+        ),
         username: updatedUser.username,
         email: updatedUser.email,
       })
@@ -110,24 +138,44 @@ const UserController = {
       const user = await UserModel.findOne({ email })
 
       if (!user) {
-        return res.status(401).json({ error: 'Incorrect password' })
+        return res
+          .status(401)
+          .json({ error: ErrorHandler.getErrorMessage('users', 'userUpdated') })
       }
 
       const passwordMatch = await bcrypt.compare(password, user.password)
 
       if (!passwordMatch) {
-        return res.status(401).json({ error: 'Incorrect password' })
+        return res
+          .status(401)
+          .json({
+            error: ErrorHandler.getErrorMessage('users', 'invalidPassword'),
+          })
       }
 
       const { isActive, isBanned } = user
       if (isBanned) {
-        return res.status(403).json({ error: 'You are banned. Access denied.' })
+        return res
+          .status(403)
+          .json({
+            error: ErrorHandler.getErrorMessage(
+              'users',
+              'userBannedOrNotActive'
+            ),
+          })
       }
       if (!isActive) {
-        return res.status(401).json({ error: 'Your account is not activated.' })
+        return res
+          .status(401)
+          .json({
+            error: ErrorHandler.getErrorMessage(
+              'users',
+              'userBannedOrNotActive'
+            ),
+          })
       }
 
-      user.isLogged = true
+      //   user.isLogged = true
 
       // Save changes
       const loginUser = await user.save()
@@ -153,7 +201,13 @@ const UserController = {
     // Save changes
     // const logoutUser = await user.save()
 
-    res.json({ message: 'Logged out successfully' })
+    res.json({
+      message: ErrorHandler.getErrorMessage(
+        'users',
+        'userBannedOrNotActive',
+        user.language
+      ),
+    })
   },
 }
 

@@ -1,4 +1,5 @@
 const ProjectModel = require('../models/project')
+const ErrorHandler = require('../constants/errorMessages/errorHandler')
 
 const ProjectController = {
   getAll: async (req, res) => {
@@ -82,7 +83,9 @@ const ProjectController = {
 
       const deletedProject = await ProjectModel.findByIdAndDelete(projectId)
 
-      res.json({ message: 'Project deleted successfully' })
+      res.json({
+        message: ErrorHandler.getErrorMessage('project', 'deletedPRoject'),
+      })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }

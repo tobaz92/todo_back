@@ -1,11 +1,14 @@
 const jwt = require('jsonwebtoken')
 const config = require('../config')
 const UserModel = require('../models/user')
+const ErrorHandler = require('../constants/errorMessages/errorHandler')
 
 const authMiddleware = async (req, res, next) => {
   const token = req.header('Authorization')
   if (!token) {
-    return res.status(401).json({ error: 'Missing authorization token' })
+    return res
+      .status(401)
+      .json({ error: ErrorHandler.getErrorMessage('users', 'invalidToken') })
   }
 
   try {
@@ -15,7 +18,9 @@ const authMiddleware = async (req, res, next) => {
     // Check if user exists
     const foundUser = await UserModel.findById(req.userId)
     if (!foundUser) {
-      return res.status(404).json({ error: 'User not found' })
+      return res
+        .status(404)
+        .json({ error: ErrorHandler.getErrorMessage('users', 'userNotFound') })
     }
 
     // remove password from user object
@@ -25,7 +30,9 @@ const authMiddleware = async (req, res, next) => {
 
     next()
   } catch (error) {
-    res.status(401).json({ error: 'Invalid token' })
+    res
+      .status(401)
+      .json({ error: ErrorHandler.getErrorMessage('users', 'invalidToken') })
   }
 }
 

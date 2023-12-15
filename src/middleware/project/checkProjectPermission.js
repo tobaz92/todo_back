@@ -1,3 +1,4 @@
+const ErrorHandler = require('../../constants/errorMessages/errorHandler')
 const checkProjectPermission = async (req, res, next) => {
   try {
     const userId = req.userId
@@ -5,7 +6,11 @@ const checkProjectPermission = async (req, res, next) => {
 
     if (req.user && req.user.role !== 'admin') {
       if (userId !== projectId) {
-        return res.status(403).json({ error: 'Permission denied' })
+        return res
+          .status(403)
+          .json({
+            error: ErrorHandler.getErrorMessage('general', 'PermissionsError'),
+          })
       }
     }
 

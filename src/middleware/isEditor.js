@@ -1,4 +1,5 @@
 const User = require('../models/user')
+const ErrorHandler = require('../constants/errorMessages/errorHandler')
 
 const isEditor = async (req, res, next) => {
   try {
@@ -6,7 +7,13 @@ const isEditor = async (req, res, next) => {
       return next()
     }
     if (req.user.role !== 'editor') {
-      return res.status(403).json({ error: 'Permission refusée' })
+      return res.status(403).json({
+        error: ErrorHandler.getErrorMessage(
+          'general',
+          'internalServerError',
+          user.language
+        ),
+      })
     }
 
     next()

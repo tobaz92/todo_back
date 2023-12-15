@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
   isBanned: { type: Boolean, default: false },
   secretKey: { type: String, default: null },
   isLogged: { type: Boolean, default: false },
+  language: { type: String, default: 'en' },
 })
 
 userSchema.pre('save', async function (next) {

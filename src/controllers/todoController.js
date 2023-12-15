@@ -1,4 +1,5 @@
 const TodoModel = require('../models/todo')
+const ErrorHandler = require('../constants/errorMessages/errorHandler')
 
 const TodoController = {
   // Get all todos from the database For dev
@@ -44,7 +45,9 @@ const TodoController = {
       todo.isCompleted = isCompleted ?? todo.isCompleted
 
       const updatedTodo = await todo.save()
-      res.json({ message: 'Update Todo successfully' })
+      res.json({
+        message: ErrorHandler.getErrorMessage('todos', 'todoUpdated'),
+      })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
@@ -58,7 +61,9 @@ const TodoController = {
       // Delete the todo
       const deletedTodo = await TodoModel.findByIdAndDelete(todoId)
 
-      res.json({ message: 'Todo deleted successfully' })
+      res.json({
+        message: ErrorHandler.getErrorMessage('todos', 'todoDeleted'),
+      })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
