@@ -23,4 +23,6 @@ router.put('/logout', authMiddleware, UserController.logout) // TODO: In progres
 
 // router.put('/logout/:id', authMiddleware, isSameUser, UserController.logout)
 
+router.get('/activation/:token', UserController.activation)
+
 module.exports = router

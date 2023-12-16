@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const config = require('../config')
 const ErrorHandler = require('../constants/errorMessages/errorHandler')
+const emailService = require('../emailService')
 
 const UserController = {
   // Get all users (for dev)
@@ -36,7 +37,7 @@ const UserController = {
           error: ErrorHandler.getErrorMessage(
             'general',
             'PermissionsError',
-            user.language
+            req.user.language
           ),
         })
       }
@@ -48,16 +49,25 @@ const UserController = {
       }
 
       const user = new UserModel({ username, email, password, role: finalRole })
-      const savedUser = await user.save()
 
-      res.json({
-        message: ErrorHandler.getErrorMessage(
-          'users',
-          'userCreated',
-          user.language
-        ),
-        userId: savedUser.id,
+      const activationToken = jwt.sign({ userId: user._id }, config.secretKey, {
+        // Expires in 1 day
+        expiresIn: 86400,
       })
+
+      user.activationToken = activationToken
+
+      try {
+        const savedUser = await user.save()
+
+        // Envoyer l'e-mail après avoir sauvegardé l'utilisateur avec succès
+        await emailService.sendActivationEmail(email, activationToken)
+
+        res.status(200).json({ message: 'E-mail envoyé avec succès' })
+      } catch (error) {
+        console.error("Erreur lors de l'envoi de l'e-mail :", error)
+        res.status(500).json({ error: "Erreur lors de l'envoi de l'e-mail" })
+      }
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
@@ -96,8 +106,16 @@ const UserController = {
   update: async (req, res) => {
     try {
       const userId = req.params.id
-      const { username, email, password, role, isActive, isBanned, language } =
-        req.body
+      const {
+        username,
+        email,
+        password,
+        role,
+        isActive,
+        isBanned,
+        language,
+        activationToken,
+      } = req.body
 
       // Check if user exists
       const user = await UserModel.findById(userId)
@@ -115,11 +133,12 @@ const UserController = {
       user.isActive = isActive ?? user.isActive
       user.isBanned = isBanned ?? user.isBanned
       user.language = language ?? user.language
+      user.activationToken = activationToken ?? user.activationToken
+
       //   user.secretKey = secretKey ?? user.secretKey
 
       // Save changes
       const updatedUser = await user.save()
-      console.log(user.language)
       res.json({
         message: ErrorHandler.getErrorMessage(
           'users',
@@ -180,9 +199,6 @@ const UserController = {
 
   // Logout a user
   logout: async (req, res) => {
-    console.log('ok')
-    consoler.log(req)
-
     const user = req.user
 
     // Save changes
@@ -195,6 +211,42 @@ const UserController = {
         user.language
       ),
     })
+  },
+
+  activation: async (req, res) => {
+    try {
+      const activationToken = req.params.token
+
+      const user = await UserModel.findOne({ activationToken })
+
+      if (!user) {
+        return res.status(404).json({
+          error: ErrorHandler.getErrorMessage('users', 'userNotFound'),
+        })
+      }
+
+      user.isActive = true
+      user.activationToken = null
+
+      // Save changes
+      const activatedUser = await user.save()
+
+      const token = jwt.sign({ userId: user._id }, config.secretKey, {
+        expiresIn: 3600, // Expires in 1 hour
+      })
+
+      res.json({
+        message: ErrorHandler.getErrorMessage(
+          'users',
+          'userActivated',
+          user.language
+        ),
+        token,
+        userId: user._id,
+      })
+    } catch (error) {
+      res.status(500).json({ error: error.message })
+    }
   },
 }
 

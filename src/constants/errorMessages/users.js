@@ -59,6 +59,10 @@ const userErrors = {
     en: 'Logout successfully.',
     fr: 'Déconnexion réussie.',
   },
+  userActivated: {
+    en: 'User activated successfully.',
+    fr: 'Utilisateur activé avec succès.',
+  },
 }
 
 module.exports = userErrors

@@ -9,7 +9,7 @@ const emailService = {
         secure: false,
       })
 
-      const activationLink = `http://localhost:3000/activate?token=${activationToken}`
+      const activationLink = `http://localhost:3000/users/activation/${activationToken}`
 
       const mailOptions = {
         from: 'noreply@todoback.com',

@@ -5,6 +5,9 @@ const qrcode = require('qrcode')
 
 const UserModel = require('../models/user')
 
+// TODO: A refaire
+// Faire que generate secret soit une fonction à intégrer dans le login
+
 // Generate and save a secret key for the user
 router.post('/generate-secret-key', async (req, res) => {
   const { userId } = req.body
