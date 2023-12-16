@@ -1,0 +1,21 @@
+meta {
+  name: add projet
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/projects
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTdkYTBiODczMWI3NWI3MTA4ZDkzOWUiLCJpYXQiOjE3MDI3NDM1MDcsImV4cCI6MTcwMjc0NzEwN30.7jIiHiCHe7hd176s5zwmVHahBRbxWjYNB0VJoalHGY8
+}
+
+body:json {
+  {
+    "title": "PROJET D"
+  }
+}

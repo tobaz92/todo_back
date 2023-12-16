@@ -1,5 +1,6 @@
 const ProjectModel = require('../models/project')
 const ErrorHandler = require('../constants/errorMessages/errorHandler')
+const reorder = require('../utils/reorder')
 
 const ProjectController = {
   getAll: async (req, res) => {
@@ -63,14 +64,29 @@ const ProjectController = {
       const { title, order, isArchive, isDeleted } = req.body
 
       const project = req.project
-      project.title = title ?? project.title
-      project.order = order ?? project.order
-      project.isArchive = isArchive ?? project.isArchive
-      project.isDeleted = isDeleted ?? project.isDeleted
+      project.title = title !== undefined ? title : project.title
+      project.order = order !== undefined ? order : project.order
+      project.isArchive =
+        isArchive !== undefined ? isArchive : project.isArchive
+      project.isDeleted =
+        isDeleted !== undefined ? isDeleted : project.isDeleted
 
-      const updatedProject = await project.save()
+      if (order === undefined) {
+        const updateProject = await project.save()
+        res.json(updateProject)
+      } else {
+        const projects = await ProjectModel.find({ userId: project.userId })
 
-      res.json(project)
+        const projectsWithUpdatedOrder = reorder(projects, project)
+
+        await Promise.all(
+          projectsWithUpdatedOrder.map(async (updatedProject) => {
+            await updatedProject.save()
+          })
+        )
+
+        res.json(project)
+      }
     } catch (error) {
       res.status(500).json({ error: error.message })
     }

@@ -1,0 +1,21 @@
+meta {
+  name: update
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:3000/projects/657dd0b1642c2428ed0e8ae0
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTdkYTBiODczMWI3NWI3MTA4ZDkzOWUiLCJpYXQiOjE3MDI3NTUwMzMsImV4cCI6MTcwMjc1ODYzM30.aBzn6DEibmv0aqd8sRI5RYce81SmsmXL83XTjeuWdCA
+}
+
+body:json {
+  {
+        "order": "1"
+  }
+}
