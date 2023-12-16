@@ -42,7 +42,7 @@ router.use('/login', UserController.login)
 
 router.use('/2fa', log2faRoutes) // In progress
 
-router.use('/register', UserController.create)
+router.use('/register', UserController.register)
 
 // app.use('/forgot-password', UserController.forgotPassword)
 

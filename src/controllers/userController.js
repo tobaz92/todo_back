@@ -1,8 +1,9 @@
+const ErrorHandler = require('../constants/errorMessages/errorHandler')
+
 const UserModel = require('../models/user')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const config = require('../config')
-const ErrorHandler = require('../constants/errorMessages/errorHandler')
 const emailService = require('../emailService')
 
 const UserController = {
@@ -26,7 +27,7 @@ const UserController = {
   },
 
   // Create a new user with a specified role
-  create: async (req, res) => {
+  register: async (req, res) => {
     try {
       const { username, email, password, role } = req.body
 
@@ -61,7 +62,7 @@ const UserController = {
         const savedUser = await user.save()
 
         // Envoyer l'e-mail après avoir sauvegardé l'utilisateur avec succès
-        await emailService.sendActivationEmail(email, activationToken)
+        await emailService.sendActivationEmail(email, username, activationToken)
 
         res.status(200).json({ message: 'E-mail envoyé avec succès' })
       } catch (error) {
@@ -221,7 +222,10 @@ const UserController = {
 
       if (!user) {
         return res.status(404).json({
-          error: ErrorHandler.getErrorMessage('users', 'userNotFound'),
+          error: ErrorHandler.getErrorMessage(
+            'users',
+            'invalidActivationToken'
+          ),
         })
       }
 
