@@ -1,0 +1,18 @@
+meta {
+  name: Send mail
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/send-email
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "to":"test@test.fr",
+    "activationToken":"test"
+  }
+}
