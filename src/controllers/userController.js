@@ -81,7 +81,11 @@ const UserController = {
       await UserModel.findByIdAndDelete(userId)
 
       res.json({
-        message: ErrorHandler.getErrorMessage('users', 'userDeleted'),
+        message: ErrorHandler.getErrorMessage(
+          'users',
+          'userDeleted',
+          user.language
+        ),
       })
     } catch (error) {
       res.status(500).json({ error: error.message })
@@ -92,17 +96,16 @@ const UserController = {
   update: async (req, res) => {
     try {
       const userId = req.params.id
-      const { username, email, password, role, isActive, isBanned } = req.body
+      const { username, email, password, role, isActive, isBanned, language } =
+        req.body
 
       // Check if user exists
       const user = await UserModel.findById(userId)
 
       if (!user) {
-        return res
-          .status(404)
-          .json({
-            error: ErrorHandler.getErrorMessage('users', 'userNotFound'),
-          })
+        return res.status(404).json({
+          error: ErrorHandler.getErrorMessage('users', 'userNotFound'),
+        })
       }
 
       user.username = username ?? user.username
@@ -111,19 +114,18 @@ const UserController = {
       user.role = role ?? user.role
       user.isActive = isActive ?? user.isActive
       user.isBanned = isBanned ?? user.isBanned
+      user.language = language ?? user.language
       //   user.secretKey = secretKey ?? user.secretKey
 
       // Save changes
       const updatedUser = await user.save()
-
+      console.log(user.language)
       res.json({
         message: ErrorHandler.getErrorMessage(
           'users',
           'userUpdated',
           user.language
         ),
-        username: updatedUser.username,
-        email: updatedUser.email,
       })
     } catch (error) {
       res.status(500).json({ error: error.message })
@@ -146,36 +148,22 @@ const UserController = {
       const passwordMatch = await bcrypt.compare(password, user.password)
 
       if (!passwordMatch) {
-        return res
-          .status(401)
-          .json({
-            error: ErrorHandler.getErrorMessage('users', 'invalidPassword'),
-          })
+        return res.status(401).json({
+          error: ErrorHandler.getErrorMessage('users', 'invalidPassword'),
+        })
       }
 
       const { isActive, isBanned } = user
       if (isBanned) {
-        return res
-          .status(403)
-          .json({
-            error: ErrorHandler.getErrorMessage(
-              'users',
-              'userBannedOrNotActive'
-            ),
-          })
+        return res.status(403).json({
+          error: ErrorHandler.getErrorMessage('users', 'userBannedOrNotActive'),
+        })
       }
       if (!isActive) {
-        return res
-          .status(401)
-          .json({
-            error: ErrorHandler.getErrorMessage(
-              'users',
-              'userBannedOrNotActive'
-            ),
-          })
+        return res.status(401).json({
+          error: ErrorHandler.getErrorMessage('users', 'userBannedOrNotActive'),
+        })
       }
-
-      //   user.isLogged = true
 
       // Save changes
       const loginUser = await user.save()
@@ -197,7 +185,6 @@ const UserController = {
 
     const user = req.user
 
-    // user.isLogged = false
     // Save changes
     // const logoutUser = await user.save()
 

@@ -2,7 +2,6 @@ const userAdmin = {
   username: 'admin',
   email: 'admin@admin.com',
   password: 'admin',
-  role: 'admin',
 }
 
 const userEditor = {

@@ -1,7 +1,7 @@
 const { default: mongoose } = require('mongoose')
-const User = require('../models/user')
+const User = require('../../models/user')
 
-const ErrorHandler = require('../constants/errorMessages/errorHandler')
+const ErrorHandler = require('../../constants/errorMessages/errorHandler')
 
 const isSameUser = async (req, res, next) => {
   const userIdFromPath = req.params.id // L'ID dans le chemin

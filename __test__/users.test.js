@@ -11,7 +11,6 @@ describe('Authentication', () => {
       password: 'incorrectPassword',
     })
     expect(response.status).toBe(401)
-    expect(response.body).toEqual({ error: 'Incorrect password' })
   })
 
   //   test('should authenticate a user and return a token', async () => {

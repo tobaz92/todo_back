@@ -3,12 +3,12 @@ const router = express.Router()
 
 const TodoController = require('../controllers/todoController')
 
-const authMiddleware = require('../middleware/authMiddleware')
+const authMiddleware = require('../middleware/user/authMiddleware')
 const getTodoById = require('../middleware/todo/getTodoById')
 const checkTodoPermission = require('../middleware/todo/checkTodoPermission')
 const todosFiltredByUser = require('../middleware/todo/todosFiltredByUser')
 
-const isEditor = require('../middleware/isEditor')
+const isEditor = require('../middleware/user/isEditor')
 
 // Get all todos for dev
 router.get('/dev', TodoController.getAll)

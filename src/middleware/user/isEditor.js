@@ -1,5 +1,5 @@
-const User = require('../models/user')
-const ErrorHandler = require('../constants/errorMessages/errorHandler')
+const User = require('../../models/user')
+const ErrorHandler = require('../../constants/errorMessages/errorHandler')
 
 const isEditor = async (req, res, next) => {
   try {

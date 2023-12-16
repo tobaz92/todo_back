@@ -3,12 +3,12 @@ const router = express.Router()
 
 const ProjectController = require('../controllers/projectController')
 
-const authMiddleware = require('../middleware/authMiddleware')
+const authMiddleware = require('../middleware/user/authMiddleware')
 const getProjectById = require('../middleware/project/getProjectById')
 const checkProjectPermission = require('../middleware/project/checkProjectPermission')
 const projectsFiltredByUser = require('../middleware/project/projectsFiltredByUser')
 
-const isEditor = require('../middleware/isEditor')
+const isEditor = require('../middleware/user/isEditor')
 const getAllTodosInPRoject = require('../middleware/project/getAllTodosInPRoject')
 
 router.get('/dev', ProjectController.getAll)
