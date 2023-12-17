@@ -49,6 +49,23 @@ const UserController = {
         })
       }
 
+      try {
+        const user = await UserModel.findOne({ email: userEmail })
+        if (user) {
+          return res.status(404).json({
+            error: ErrorHandler.getErrorMessage(
+              'users',
+              'duplicateEmail',
+              user.language
+            ),
+          })
+        }
+      } catch (error) {
+        return res.status(404).json({
+          error: ErrorHandler.getErrorMessage('users', 'duplicateEmail'),
+        })
+      }
+
       const user = new UserModel({ username, email, password, role: finalRole })
 
       const activationToken = jwt.sign({ userId: user._id }, config.secretKey, {
@@ -64,9 +81,10 @@ const UserController = {
         // Envoyer l'e-mail après avoir sauvegardé l'utilisateur avec succès
         await emailService.sendActivationEmail(email, username, activationToken)
 
-        res.status(200).json({ message: 'E-mail envoyé avec succès' })
+        res.status(200).json({
+          message: ErrorHandler.getErrorMessage('users', 'successSendEmail'),
+        })
       } catch (error) {
-        console.error("Erreur lors de l'envoi de l'e-mail :", error)
         res.status(500).json({ error: "Erreur lors de l'envoi de l'e-mail" })
       }
     } catch (error) {
@@ -160,9 +178,9 @@ const UserController = {
       const user = await UserModel.findOne({ email })
 
       if (!user) {
-        return res
-          .status(401)
-          .json({ error: ErrorHandler.getErrorMessage('users', 'userUpdated') })
+        return res.status(401).json({
+          error: ErrorHandler.getErrorMessage('users', 'invalidCredentials'),
+        })
       }
 
       const passwordMatch = await bcrypt.compare(password, user.password)

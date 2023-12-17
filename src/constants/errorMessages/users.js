@@ -11,6 +11,10 @@ const userErrors = {
     en: 'Email is already in use.',
     fr: "L'email est déjà utilisé.",
   },
+  successSendEmail: {
+    en: 'Email sent successfully.',
+    fr: 'Email envoyé avec succès.',
+  },
   invalidUsername: {
     en: 'Invalid username.',
     fr: "Nom d'utilisateur invalide.",
@@ -63,7 +67,7 @@ const userErrors = {
     en: 'User activated successfully.',
     fr: 'Utilisateur activé avec succès.',
   },
-  // Lien d'activation expiré ou invalide
+
   invalidActivationToken: {
     en: 'Activation link expired or invalid.',
     fr: "Lien d'activation expiré ou invalide.",

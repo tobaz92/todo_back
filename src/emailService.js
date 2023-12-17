@@ -9,7 +9,7 @@ const emailService = {
         secure: false,
       })
 
-      const activationLink = `http://localhost:3000/users/activation/${activationToken}`
+      const activationLink = `http://localhost:${process.env.API_PORT}/users/activation/${activationToken}`
       const nameOfTheApp = 'todo'
 
       const mailOptions = {
