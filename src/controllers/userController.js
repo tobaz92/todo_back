@@ -6,6 +6,8 @@ const jwt = require('jsonwebtoken')
 const config = require('../config')
 const emailService = require('../emailService')
 
+const CryptoJS = require('crypto-js')
+
 const UserController = {
   // Get all users (for dev)
   getAll: async (req, res) => {
@@ -29,7 +31,7 @@ const UserController = {
   // Create a new user with a specified role
   register: async (req, res) => {
     try {
-      const { username, email, password, role } = req.body
+      const { username, email, password, role, browserFingerprint } = req.body
 
       const finalRole = ['admin', 'editor'].includes(role) ? role : 'editor'
 
@@ -50,7 +52,8 @@ const UserController = {
       }
 
       try {
-        const user = await UserModel.findOne({ email: userEmail })
+        const user = await UserModel.findOne({ email: email })
+        console.log(user)
         if (user) {
           return res.status(404).json({
             error: ErrorHandler.getErrorMessage(
@@ -69,11 +72,11 @@ const UserController = {
       const user = new UserModel({ username, email, password, role: finalRole })
 
       const activationToken = jwt.sign({ userId: user._id }, config.secretKey, {
-        // Expires in 1 day
         expiresIn: 86400,
       })
 
       user.activationToken = activationToken
+      user.browserFingerprint = browserFingerprint ?? null
 
       try {
         const savedUser = await user.save()
@@ -173,7 +176,9 @@ const UserController = {
   // Authenticate a user
   login: async (req, res) => {
     try {
-      const { email, password } = req.body
+      const { email, password, rememberedUser } = req.body
+      let decodedJSON
+      let passwordCheck
 
       const user = await UserModel.findOne({ email })
 
@@ -182,8 +187,20 @@ const UserController = {
           error: ErrorHandler.getErrorMessage('users', 'invalidCredentials'),
         })
       }
+      if (rememberedUser !== undefined) {
+        const secretKey = user.secretKey
 
-      const passwordMatch = await bcrypt.compare(password, user.password)
+        const decryptedData = CryptoJS.AES.decrypt(rememberedUser, secretKey)
+        const decryptedDataJSON = JSON.parse(
+          decryptedData.toString(CryptoJS.enc.Utf8)
+        ).password
+
+        passwordCheck = decryptedDataJSON
+      } else {
+        passwordCheck = password
+      }
+
+      const passwordMatch = await bcrypt.compare(passwordCheck, user.password)
 
       if (!passwordMatch) {
         return res.status(401).json({
@@ -202,7 +219,13 @@ const UserController = {
           error: ErrorHandler.getErrorMessage('users', 'userBannedOrNotActive'),
         })
       }
-
+      if (rememberedUser === undefined) {
+        const secretKey = jwt.sign({ userId: user._id }, config.secretKey, {
+          // Expires in 30 days
+          expiresIn: 2592000,
+        })
+        user.secretKey = secretKey
+      }
       // Save changes
       const loginUser = await user.save()
 
@@ -210,7 +233,7 @@ const UserController = {
         expiresIn: 3600, // Expires in 1 hour
       })
 
-      res.json({ token, userId: user._id })
+      res.json({ token, userId: user._id, secretKey: loginUser.secretKey })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
