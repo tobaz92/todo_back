@@ -53,7 +53,6 @@ const UserController = {
 
       try {
         const user = await UserModel.findOne({ email: email })
-        console.log(user)
         if (user) {
           return res.status(404).json({
             error: ErrorHandler.getErrorMessage(
@@ -177,7 +176,6 @@ const UserController = {
   login: async (req, res) => {
     try {
       const { email, password, rememberedUser } = req.body
-      let decodedJSON
       let passwordCheck
 
       const user = await UserModel.findOne({ email })
