@@ -34,6 +34,55 @@ const emailService = {
       throw new Error("Erreur lors de l'envoi de l'e-mail d'activation")
     }
   },
+
+  sendResetPasswordEmail: async (to, username, resetPassword) => {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: 'localhost',
+        port: 8025,
+        secure: false,
+      })
+
+      const logLink = 'http://localhost:5173/'
+      const nameOfTheApp = 'ToDo'
+
+      const mailOptions = {
+        from: 'noreply@todo.com',
+        to: to,
+        subject: `Réinitialisation de mot de passe - ${nameOfTheApp}`,
+        html: `
+		  <div style="font-family: 'Arial', sans-serif; background-color: #f9f9f9; padding: 20px;">
+			<p>Bonjour ${username} !</p>
+			<p>Nous sommes ravis de vous accueillir chez ${nameOfTheApp} !</p>
+			<p>Pour réinitialiser votre mot de passe, veuillez cliquer sur le lien ci-dessous :</p>
+			
+			<div style="background-color: #fff; padding: 20px; border-radius: 5px; margin-top: 15px;">
+			  <p style="font-weight: bold;">Votre mot de passe temporaire :</p>
+			  <p style="font-family: 'Courier New', monospace; background-color: #f2f2f2; padding: 1rem; display: inline-block; border-radius: 5px;">${resetPassword}</p>
+			</div>
+			
+			<a href="${logLink}?email=${to}&pass=${resetPassword}" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background-color: #000; color: #ffffff; text-decoration: none; border-radius: 5px;">Login to ${nameOfTheApp}</a>
+			
+			<p>Si vous n'avez pas demandé de réinitialisation de mot de passe, veuillez ignorer cet e-mail.</p>
+			<p>Merci de faire partie de notre communauté.</p>
+			<p>Cordialement,<br/>L'équipe ${nameOfTheApp}</p>
+		  </div>
+		`,
+      }
+
+      const info = await transporter.sendMail(mailOptions)
+
+      return true
+    } catch (error) {
+      console.error(
+        "Erreur lors de l'envoi de l'e-mail de réinitialisation du mot de passe :",
+        error
+      )
+      throw new Error(
+        "Erreur lors de l'envoi de l'e-mail de réinitialisation du mot de passe"
+      )
+    }
+  },
 }
 
 module.exports = emailService

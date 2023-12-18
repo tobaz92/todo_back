@@ -19,10 +19,12 @@ router.delete('/dev/:id', UserController.delete)
 router.put('/:id', authMiddleware, isSameUser, UserController.update)
 router.put('/dev/:id', UserController.update)
 
-router.put('/logout', authMiddleware, UserController.logout) // TODO: In progress
+// router.put('/logout', authMiddleware, UserController.logout) // TODO: In progress
 
 // router.put('/logout/:id', authMiddleware, isSameUser, UserController.logout)
 
 router.get('/activation/:token', UserController.activation)
+
+router.post('/forgotpassword', UserController.forgotPassword)
 
 module.exports = router

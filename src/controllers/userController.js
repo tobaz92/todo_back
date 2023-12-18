@@ -176,8 +176,8 @@ const UserController = {
   login: async (req, res) => {
     try {
       const { email, password, rememberedUser } = req.body
-      let passwordCheck
 
+      // Recherche de l'utilisateur par email
       const user = await UserModel.findOne({ email })
 
       if (!user) {
@@ -185,15 +185,12 @@ const UserController = {
           error: ErrorHandler.getErrorMessage('users', 'invalidCredentials'),
         })
       }
+
+      let passwordCheck
+
+      // Vérification du mot de passe
       if (rememberedUser !== undefined) {
-        const secretKey = user.secretKey
-
-        const decryptedData = CryptoJS.AES.decrypt(rememberedUser, secretKey)
-        const decryptedDataJSON = JSON.parse(
-          decryptedData.toString(CryptoJS.enc.Utf8)
-        ).password
-
-        passwordCheck = decryptedDataJSON
+        passwordCheck = decryptRememberedUser(rememberedUser, user.secretKey)
       } else {
         passwordCheck = password
       }
@@ -206,33 +203,33 @@ const UserController = {
         })
       }
 
-      const { isActive, isBanned } = user
-      if (isBanned) {
-        return res.status(403).json({
-          error: ErrorHandler.getErrorMessage('users', 'userBannedOrNotActive'),
+      // Vérification de l'état de l'utilisateur (actif ou banni)
+      if (!user.isActive || user.isBanned) {
+        const errorMessageKey = user.isBanned
+          ? 'userBannedOrNotActive'
+          : 'userBannedOrNotActive'
+        return res.status(user.isBanned ? 403 : 401).json({
+          error: ErrorHandler.getErrorMessage('users', errorMessageKey),
         })
       }
-      if (!isActive) {
-        return res.status(401).json({
-          error: ErrorHandler.getErrorMessage('users', 'userBannedOrNotActive'),
-        })
-      }
+
+      // Génération d'une clé secrète si l'utilisateur n'est pas "remembered"
       if (rememberedUser === undefined) {
-        const secretKey = jwt.sign({ userId: user._id }, config.secretKey, {
-          // Expires in 30 days
-          expiresIn: 2592000,
-        })
-        user.secretKey = secretKey
+        user.secretKey = generateSecretKey(user._id)
       }
-      // Save changes
+
+      // Enregistrement des modifications
       const loginUser = await user.save()
 
+      // Génération du token JWT
       const token = jwt.sign({ userId: user._id }, config.secretKey, {
         expiresIn: 3600, // Expires in 1 hour
       })
 
+      // Réponse JSON avec le token et les informations de l'utilisateur
       res.json({ token, userId: user._id, secretKey: loginUser.secretKey })
     } catch (error) {
+      // Gestion des erreurs
       res.status(500).json({ error: error.message })
     }
   },
@@ -291,6 +288,50 @@ const UserController = {
       res.status(500).json({ error: error.message })
     }
   },
+
+  forgotPassword: async (req, res) => {
+    try {
+      const { email } = req.body
+
+      const user = await UserModel.findOne({ email })
+
+      if (!user) {
+        return res.status(404).json({
+          error: ErrorHandler.getErrorMessage('users', 'userNotFound'),
+        })
+      }
+
+      const resetPassword = Math.random().toString(36).slice(-8)
+      user.password = resetPassword
+
+      const updatedUser = await user.save()
+
+      await emailService.sendResetPasswordEmail(
+        email,
+        user.username,
+        resetPassword
+      )
+
+      res.status(200).json({
+        message: ErrorHandler.getErrorMessage('users', 'successSendEmail'),
+      })
+    } catch (error) {
+      res.status(500).json({ error: error.message })
+    }
+  },
 }
 
 module.exports = UserController
+
+// Fonction pour décrypter les données "rememberedUser"
+const decryptRememberedUser = (rememberedUser, secretKey) => {
+  const decryptedData = CryptoJS.AES.decrypt(rememberedUser, secretKey)
+  return JSON.parse(decryptedData.toString(CryptoJS.enc.Utf8)).password
+}
+
+// Fonction pour générer une clé secrète
+const generateSecretKey = (userId) => {
+  return jwt.sign({ userId }, config.secretKey, {
+    expiresIn: 2592000, // Expires in 30 days
+  })
+}
